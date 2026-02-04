@@ -446,25 +446,33 @@ function mod:SetBackdrop()
 end
 
 function mod:SetBorderByChannel(...)
-	self.hooks.ChatEdit_UpdateHeader(...)
-	for index, frame in ipairs(self.frames) do
-		local f = _G["ChatFrame"..index.."EditBox"]
-		local attr = f:GetAttribute("chatType")
-		if attr == "CHANNEL" then
-			local chan = ChatEdit_GetChannelTarget(f)
-			if chan == 0 then
-				local c = self.db.profile.borderColor
-				frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
-			else
-				local r, g, b = GetMessageTypeColor("CHANNEL" .. chan)
-				frame:SetBackdropBorderColor(r, g, b, 1)
-			end
-		else
-			local r, g, b = GetMessageTypeColor(attr)
-			frame:SetBackdropBorderColor(r, g, b, 1)
-		end
-	end
+    self.hooks.ChatEdit_UpdateHeader(...)
+    for index, frame in ipairs(self.frames) do
+        local f = _G["ChatFrame"..index.."EditBox"]
+        local attr = f:GetAttribute("chatType")
+
+        if attr == "INSTANCE_CHAT" then
+            attr = "CHAT_MSG_INSTANCE_CHAT"
+        elseif attr == "INSTANCE_CHAT_LEADER" then
+            attr = "CHAT_MSG_INSTANCE_CHAT_LEADER"
+        end
+
+        if attr == "CHANNEL" then
+            local chan = ChatEdit_GetChannelTarget(f)
+            if chan == 0 then
+                local c = self.db.profile.borderColor
+                frame:SetBackdropBorderColor(c.r, c.g, c.b, c.a)
+            else
+                local r, g, b = GetMessageTypeColor("CHANNEL" .. chan)
+                frame:SetBackdropBorderColor(r, g, b, 1)
+            end
+        else
+            local r, g, b = GetMessageTypeColor(attr)
+            frame:SetBackdropBorderColor(r, g, b, 1)
+        end
+    end
 end
+
 
 do
 	local function startMoving(self)
